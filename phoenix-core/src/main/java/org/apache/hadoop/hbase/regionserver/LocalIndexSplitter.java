@@ -93,9 +93,6 @@ public class LocalIndexSplitter extends BaseRegionObserver {
                 int encodedVersion = VersionUtil.encodeVersion(environment.getHBaseVersion());
                 if(encodedVersion >= SPLIT_TXN_MINIMUM_SUPPORTED_VERSION) {
                     st = new SplitTransaction(indexRegion, splitKey);
-                    st.useZKForAssignment =
-                            environment.getConfiguration().getBoolean("hbase.assignment.usezk",
-                                true);
                 } else {
                     st = new IndexSplitTransaction(indexRegion, splitKey);
                 }

@@ -64,19 +64,6 @@ def setPath():
     if phoenix_class_path == "":
         phoenix_class_path = os.getenv('PHOENIX_CLASS_PATH','')
 
-    global hbase_conf_dir
-    # if HBASE_CONF_DIR set explicitly, use that
-    hbase_conf_dir = os.getenv('HBASE_CONF_DIR', os.getenv('HBASE_CONF_PATH'))
-    if not hbase_conf_dir:
-        # else fall back to HBASE_HOME
-        if os.getenv('HBASE_HOME'):
-            hbase_conf_dir = os.path.join(os.getenv('HBASE_HOME'), "conf")
-        else:
-            # default to pwd
-            hbase_conf_dir = '.'
-    global hbase_conf_path # keep conf_path around for backward compatibility
-    hbase_conf_path = hbase_conf_dir
-
     global current_dir
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -93,17 +80,37 @@ def setPath():
     global phoenix_test_jar_path
     phoenix_test_jar_path = os.path.join(current_dir, "..", "phoenix-core", "target","*")
 
-    global hadoop_common_jar_path
-    hadoop_common_jar_path = os.path.join(current_dir, "..", "phoenix-assembly", "target","*")
+
+    global phoenix_conf_dir
+    phoenix_conf_dir = "/etc/phoenix/conf/"
+
+    global hbase_conf_dir
+    hbase_conf_dir = "/etc/phoenix/conf/"
+
+    global hadoop_conf_dir
+    hadoop_conf_dir = "/etc/hadoop/conf/"
+
+    global hbase_protocol_jar
+    hbase_protocol_jar = "/opt/cloudera/parcels/CDH/lib/hbase/hbase-protocol.jar"
+
+    global hbase_client_jar
+    hbase_client_jar = "/opt/cloudera/parcels/CDH/lib/hbase/hbase-client.jar"
+
+    global hbase_jar
+    hbase_jar = "/opt/cloudera/parcels/CDH/lib/hbase/hbase-common.jar"
 
     global hadoop_common_jar
-    hadoop_common_jar = find("hadoop-common*.jar", hadoop_common_jar_path)
+    hadoop_common_jar = "/opt/cloudera/parcels/CDH/lib/hadoop/hadoop-common.jar"
+   
+    global hadoop_auth_jar
+    hadoop_auth_jar = "/opt/cloudera/parcels/CDH/lib/hadoop/hadoop-auth.jar"
 
-    global hadoop_hdfs_jar_path
-    hadoop_hdfs_jar_path = os.path.join(current_dir, "..", "phoenix-assembly", "target","*")
+    global zookeeper_jar
+    zookeeper_jar = "/opt/cloudera/parcels/CDH/lib/hbase/zookeeper.jar"
 
     global hadoop_hdfs_jar
-    hadoop_hdfs_jar = find("hadoop-hdfs*.jar", hadoop_hdfs_jar_path)
+    hadoop_hdfs_jar = "/opt/cloudera/parcels/CDH/lib/hadoop-hdfs/hadoop-hdfs.jar"
+
 
     global testjar
     testjar = find(PHOENIX_TESTS_JAR_PATTERN, phoenix_test_jar_path)
@@ -146,14 +153,11 @@ if __name__ == "__main__":
     setPath()
     print "phoenix_class_path:", phoenix_class_path
     print "hbase_conf_dir:", hbase_conf_dir
-    print "hbase_conf_path:", hbase_conf_path
     print "current_dir:", current_dir
     print "phoenix_jar_path:", phoenix_jar_path
     print "phoenix_client_jar:", phoenix_client_jar
     print "phoenix_test_jar_path:", phoenix_test_jar_path
-    print "hadoop_common_jar_path:", hadoop_common_jar_path
     print "hadoop_common_jar:", hadoop_common_jar
-    print "hadoop_hdfs_jar_path:", hadoop_hdfs_jar_path
     print "hadoop_hdfs_jar:", hadoop_hdfs_jar
     print "testjar:", testjar
     print "phoenix_queryserver_jar:", phoenix_queryserver_jar

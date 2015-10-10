@@ -111,6 +111,8 @@ log_file_path = os.path.join(phoenix_log_dir, phoenix_log_file)
 out_file_path = os.path.join(phoenix_log_dir, phoenix_out_file)
 pid_file_path = os.path.join(hbase_pid_dir, phoenix_pid_file)
 
+cp = [phoenix_utils.hadoop_conf_dir, phoenix_utils.hbase_conf_dir, phoenix_utils.hbase_jar, phoenix_utils.hbase_client_jar, phoenix_utils.hbase_protocol_jar, phoenix_utils.hadoop_common_jar, phoenix_utils.zookeeper_jar, phoenix_utils.hadoop_auth_jar, phoenix_utils.hadoop_hdfs_jar, phoenix_utils.phoenix_queryserver_jar, phoenix_utils.phoenix_conf_dir] 
+
 if java_home:
     java = os.path.join(java_home, 'bin', 'java')
 else:
@@ -118,14 +120,18 @@ else:
 
 #    " -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=n " + \
 #    " -XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=defaultrecording=true,dumponexit=true" + \
-java_cmd = '%(java)s -cp ' + hbase_config_path + os.pathsep + phoenix_utils.phoenix_queryserver_jar + \
+java_cmd = '%(java)s -cp ' + os.pathsep.join(cp) + \
     " -Dproc_phoenixserver" + \
-    " -Dlog4j.configuration=file:" + os.path.join(phoenix_utils.current_dir, "log4j.properties") + \
+    " -Dlog4j.configuration=file:" + os.path.join(phoenix_utils.phoenix_conf_dir, "log4j.properties") + \
+    " -Djava.security.auth.login.config=file:" + \
+    os.path.join(phoenix_utils.phoenix_conf_dir, "jaas.conf") + \
     " -Dpsql.root.logger=%(root_logger)s" + \
     " -Dpsql.log.dir=%(log_dir)s" + \
     " -Dpsql.log.file=%(log_file)s" + \
     " " + opts + \
     " org.apache.phoenix.queryserver.server.Main " + args
+
+print java_cmd
 
 if command == 'makeWinServiceDesc':
     cmd = java_cmd % {'java': java, 'root_logger': 'INFO,DRFA,console', 'log_dir': phoenix_log_dir, 'log_file': phoenix_log_file}
@@ -160,6 +166,7 @@ if command == 'start':
             # this block is the main() for the forked daemon process
             child = None
             cmd = java_cmd % {'java': java, 'root_logger': 'INFO,DRFA', 'log_dir': phoenix_log_dir, 'log_file': phoenix_log_file}
+            print cmd
 
             # notify the child when we're killed
             def handler(signum, frame):
